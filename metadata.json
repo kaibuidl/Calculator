@@ -1,0 +1,5 @@
+{
+  "name": "iOS Style Calculator",
+  "description": "A pixel-perfect iOS/macOS style calculator with support for basic arithmetic, percentages, and history.",
+  "requestFramePermissions": []
+}
