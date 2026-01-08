@@ -33,9 +33,9 @@ export const CalculatorButton: React.FC<CalculatorButtonProps> = ({
     <button
       onClick={onClick}
       className={`
-        w-[68px] h-[68px] md:w-[72px] md:h-[72px] 
+        w-[80px] h-[80px] md:w-[72px] md:h-[72px] 
         rounded-full flex items-center justify-center 
-        text-2xl md:text-3xl font-normal transition-colors duration-150
+        text-3xl md:text-3xl font-normal transition-colors duration-150 active:opacity-70
         ${getBaseClasses()}
       `}
     >

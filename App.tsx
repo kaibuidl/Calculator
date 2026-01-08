@@ -14,9 +14,13 @@ const BackspaceIcon = () => (
 );
 
 const SidebarIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-    <line x1="9" y1="3" x2="9" y2="21"></line>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff9f0a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="3" y1="12" x2="21" y2="12"></line>
+    <line x1="3" y1="6" x2="21" y2="6"></line>
+    <line x1="3" y1="18" x2="21" y2="18"></line>
+    <circle cx="4" cy="6" r="1" fill="#ff9f0a"></circle>
+    <circle cx="4" cy="12" r="1" fill="#ff9f0a"></circle>
+    <circle cx="4" cy="18" r="1" fill="#ff9f0a"></circle>
   </svg>
 );
 
@@ -202,58 +206,80 @@ const App: React.FC = () => {
   }, [state]);
 
   return (
-    <div className={`bg-[#1c1c1e] ${state.isHistoryVisible ? 'w-[700px]' : 'w-[400px]'} h-[650px] rounded-[30px] shadow-[0_40px_80px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden transition-all duration-300 border border-[#333]`}>
+    <div className={`bg-black md:bg-[#1c1c1e] w-full h-full md:w-auto md:h-[650px] md:rounded-[30px] shadow-[0_40px_80px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden transition-all duration-300 md:border md:border-[#333] relative ${!state.isHistoryVisible ? 'md:w-[400px]' : 'md:w-[700px]'}`}>
       {/* Top Header Controls */}
-      <div className="w-full flex items-center justify-between p-4 bg-[#1c1c1e]">
-        <div className="flex gap-2">
+      <div className="w-full flex items-center justify-between p-6 pt-12 md:p-4 md:bg-[#1c1c1e] z-10">
+        <div className="hidden md:flex gap-2">
           <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
           <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
           <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
         </div>
 
-        <div className="flex gap-2 ml-auto">
-          <button
-            onClick={toggleHistory}
-            className={`p-2 rounded-lg transition-colors ${state.isHistoryVisible ? 'bg-[#3a3a3c] text-white' : 'text-[#9a9a9e] hover:bg-[#3a3a3c]'}`}
-          >
-            <SidebarIcon />
-          </button>
-        </div>
+        <button
+          onClick={toggleHistory}
+          className="p-2 -ml-2 md:ml-auto transition-opacity active:opacity-50"
+        >
+          <SidebarIcon />
+        </button>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* History Pane */}
-        {state.isHistoryVisible && (
-          <HistorySidebar history={state.history} />
-        )}
+        {/* Web History Pane (Side) */}
+        <div className="hidden md:block">
+          {state.isHistoryVisible && (
+            <HistorySidebar 
+              history={state.history} 
+              isVisible={true} 
+              onClose={() => {}} 
+              onClear={() => setState(prev => ({ ...prev, history: [] }))}
+              isMobile={false}
+            />
+          )}
+        </div>
 
         {/* Calculator Pane */}
-        <div className="flex-1 flex flex-col pt-6 px-8 pb-12">
+        <div className="flex-1 flex flex-col justify-end md:justify-start px-6 pb-12 md:pt-6 md:px-8 md:pb-12">
           {/* Display Area */}
-          <div className="w-full flex-1 flex flex-col justify-end items-end mb-8 px-4">
+          <div className="w-full flex flex-col justify-end items-end mb-4 md:mb-8 md:px-4 md:flex-1">
             {state.previousValue && state.operator && (
               <div className="text-[#8e8e93] text-xl mb-1">
                 {formatNumber(state.previousValue)} {state.operator === '/' ? '÷' : state.operator === '*' ? '×' : state.operator === '-' ? '−' : '+'}
               </div>
             )}
-            <div className="text-white text-7xl font-light tracking-tight truncate w-full text-right overflow-hidden leading-tight">
+            <div className="text-white text-[80px] md:text-7xl font-light tracking-tight truncate w-full text-right overflow-hidden leading-none mb-2 md:leading-tight">
               {formatNumber(state.currentValue)}
             </div>
           </div>
 
           {/* Buttons Grid */}
-          <div className="grid grid-cols-4 gap-4 w-full justify-items-center mb-4">
+          <div className="grid grid-cols-4 gap-3 md:gap-4 w-full justify-items-center">
             {/* Row 1 */}
-            <CalculatorButton
-              label={<BackspaceIcon />}
-              type={ButtonType.FUNCTION}
-              onClick={handleDelete}
-            />
-            <CalculatorButton
-              label={state.currentValue === '0' && !state.previousValue ? 'AC' : 'C'}
-              type={ButtonType.FUNCTION}
-              onClick={handleAC}
-            />
+            <div className="md:hidden">
+              <CalculatorButton
+                label={state.currentValue === '0' && !state.previousValue ? 'AC' : 'C'}
+                type={ButtonType.FUNCTION}
+                onClick={handleAC}
+              />
+            </div>
+            <div className="hidden md:block">
+              <CalculatorButton
+                label={<BackspaceIcon />}
+                type={ButtonType.FUNCTION}
+                onClick={handleDelete}
+              />
+            </div>
+            
+            <div className="md:hidden">
+              <CalculatorButton label="⁺/₋" type={ButtonType.FUNCTION} onClick={handleToggleSign} />
+            </div>
+            <div className="hidden md:block">
+              <CalculatorButton
+                label={state.currentValue === '0' && !state.previousValue ? 'AC' : 'C'}
+                type={ButtonType.FUNCTION}
+                onClick={handleAC}
+              />
+            </div>
+
             <CalculatorButton
               label="%"
               type={ButtonType.FUNCTION}
@@ -300,12 +326,37 @@ const App: React.FC = () => {
             />
 
             {/* Row 5 */}
-            <CalculatorButton label="⁺/₋" type={ButtonType.NUMBER} onClick={handleToggleSign} />
+            <div className="md:hidden col-span-1 w-full flex justify-center">
+              <CalculatorButton 
+                label={
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2zm0 8H7v-2h10v2z"/>
+                  </svg>
+                } 
+                type={ButtonType.NUMBER} 
+                onClick={() => {}} 
+              />
+            </div>
+            <div className="hidden md:block">
+              <CalculatorButton label="⁺/₋" type={ButtonType.NUMBER} onClick={handleToggleSign} />
+            </div>
+
             <CalculatorButton label="0" type={ButtonType.NUMBER} onClick={() => handleNumber('0')} />
             <CalculatorButton label="." type={ButtonType.NUMBER} onClick={handleDecimal} />
             <CalculatorButton label="=" type={ButtonType.OPERATOR} onClick={handleEqual} />
           </div>
         </div>
+      </div>
+
+      {/* Mobile History Drawer */}
+      <div className="md:hidden">
+        <HistorySidebar 
+          history={state.history} 
+          isVisible={state.isHistoryVisible} 
+          onClose={() => setState(prev => ({ ...prev, isHistoryVisible: false }))}
+          onClear={() => setState(prev => ({ ...prev, history: [] }))}
+          isMobile={true}
+        />
       </div>
     </div>
   );
