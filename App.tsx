@@ -29,7 +29,7 @@ const App: React.FC = () => {
       operator: null,
       waitingForNewValue: false,
       history: saved ? JSON.parse(saved) : [],
-      isHistoryVisible: true,
+      isHistoryVisible: false,
     };
   });
 
@@ -41,7 +41,7 @@ const App: React.FC = () => {
     if (numStr === 'Error' || numStr === 'NaN') return numStr;
     const num = parseFloat(numStr);
     if (isNaN(num)) return '0';
-    
+
     if (Math.abs(num) > 1e12 || (Math.abs(num) < 1e-7 && num !== 0)) {
       return num.toExponential(4);
     }
@@ -60,10 +60,10 @@ const App: React.FC = () => {
           waitingForNewValue: false,
         };
       }
-      
+
       const newValue = prev.currentValue === '0' ? digit : prev.currentValue + digit;
       if (newValue.replace('.', '').length > 11) return prev;
-      
+
       return { ...prev, currentValue: newValue };
     });
   };
@@ -91,7 +91,7 @@ const App: React.FC = () => {
   const handleOperator = (nextOp: Operator) => {
     setState(prev => {
       const val = parseFloat(prev.currentValue);
-      
+
       if (prev.previousValue === null) {
         return {
           ...prev,
@@ -123,11 +123,11 @@ const App: React.FC = () => {
   const handleEqual = () => {
     setState(prev => {
       if (!prev.operator || prev.previousValue === null) return prev;
-      
+
       const val1 = parseFloat(prev.previousValue);
       const val2 = parseFloat(prev.currentValue);
       const result = calculate(val1, val2, prev.operator);
-      
+
       const displayOp = prev.operator === '/' ? '÷' : prev.operator === '*' ? '×' : prev.operator === '-' ? '−' : '+';
       const newItem: HistoryItem = {
         id: Date.now().toString(),
@@ -210,9 +210,9 @@ const App: React.FC = () => {
           <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
           <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
         </div>
-        
+
         <div className="flex gap-2 ml-auto">
-          <button 
+          <button
             onClick={toggleHistory}
             className={`p-2 rounded-lg transition-colors ${state.isHistoryVisible ? 'bg-[#3a3a3c] text-white' : 'text-[#9a9a9e] hover:bg-[#3a3a3c]'}`}
           >
@@ -228,9 +228,9 @@ const App: React.FC = () => {
         )}
 
         {/* Calculator Pane */}
-        <div className="flex-1 flex flex-col p-6">
+        <div className="flex-1 flex flex-col pt-6 px-8 pb-12">
           {/* Display Area */}
-          <div className="w-full flex-1 flex flex-col justify-end items-end mb-6 px-4">
+          <div className="w-full flex-1 flex flex-col justify-end items-end mb-8 px-4">
             {state.previousValue && state.operator && (
               <div className="text-[#8e8e93] text-xl mb-1">
                 {formatNumber(state.previousValue)} {state.operator === '/' ? '÷' : state.operator === '*' ? '×' : state.operator === '-' ? '−' : '+'}
@@ -242,61 +242,61 @@ const App: React.FC = () => {
           </div>
 
           {/* Buttons Grid */}
-          <div className="grid grid-cols-4 gap-3 w-full justify-items-center mb-4">
+          <div className="grid grid-cols-4 gap-4 w-full justify-items-center mb-4">
             {/* Row 1 */}
-            <CalculatorButton 
-              label={<BackspaceIcon />} 
-              type={ButtonType.FUNCTION} 
-              onClick={handleDelete} 
+            <CalculatorButton
+              label={<BackspaceIcon />}
+              type={ButtonType.FUNCTION}
+              onClick={handleDelete}
             />
-            <CalculatorButton 
-              label={state.currentValue === '0' && !state.previousValue ? 'AC' : 'C'} 
-              type={ButtonType.FUNCTION} 
-              onClick={handleAC} 
+            <CalculatorButton
+              label={state.currentValue === '0' && !state.previousValue ? 'AC' : 'C'}
+              type={ButtonType.FUNCTION}
+              onClick={handleAC}
             />
-            <CalculatorButton 
-              label="%" 
-              type={ButtonType.FUNCTION} 
-              onClick={handlePercent} 
+            <CalculatorButton
+              label="%"
+              type={ButtonType.FUNCTION}
+              onClick={handlePercent}
             />
-            <CalculatorButton 
-              label="÷" 
-              type={ButtonType.OPERATOR} 
+            <CalculatorButton
+              label="÷"
+              type={ButtonType.OPERATOR}
               isActive={state.operator === '/' && state.waitingForNewValue}
-              onClick={() => handleOperator('/')} 
+              onClick={() => handleOperator('/')}
             />
 
             {/* Row 2 */}
             <CalculatorButton label="7" type={ButtonType.NUMBER} onClick={() => handleNumber('7')} />
             <CalculatorButton label="8" type={ButtonType.NUMBER} onClick={() => handleNumber('8')} />
             <CalculatorButton label="9" type={ButtonType.NUMBER} onClick={() => handleNumber('9')} />
-            <CalculatorButton 
-              label="×" 
-              type={ButtonType.OPERATOR} 
+            <CalculatorButton
+              label="×"
+              type={ButtonType.OPERATOR}
               isActive={state.operator === '*' && state.waitingForNewValue}
-              onClick={() => handleOperator('*')} 
+              onClick={() => handleOperator('*')}
             />
 
             {/* Row 3 */}
             <CalculatorButton label="4" type={ButtonType.NUMBER} onClick={() => handleNumber('4')} />
             <CalculatorButton label="5" type={ButtonType.NUMBER} onClick={() => handleNumber('5')} />
             <CalculatorButton label="6" type={ButtonType.NUMBER} onClick={() => handleNumber('6')} />
-            <CalculatorButton 
-              label="−" 
-              type={ButtonType.OPERATOR} 
+            <CalculatorButton
+              label="−"
+              type={ButtonType.OPERATOR}
               isActive={state.operator === '-' && state.waitingForNewValue}
-              onClick={() => handleOperator('-')} 
+              onClick={() => handleOperator('-')}
             />
 
             {/* Row 4 */}
             <CalculatorButton label="1" type={ButtonType.NUMBER} onClick={() => handleNumber('1')} />
             <CalculatorButton label="2" type={ButtonType.NUMBER} onClick={() => handleNumber('2')} />
             <CalculatorButton label="3" type={ButtonType.NUMBER} onClick={() => handleNumber('3')} />
-            <CalculatorButton 
-              label="+" 
-              type={ButtonType.OPERATOR} 
+            <CalculatorButton
+              label="+"
+              type={ButtonType.OPERATOR}
               isActive={state.operator === '+' && state.waitingForNewValue}
-              onClick={() => handleOperator('+')} 
+              onClick={() => handleOperator('+')}
             />
 
             {/* Row 5 */}
